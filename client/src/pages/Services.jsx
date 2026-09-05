@@ -1,0 +1,10 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { HiArrowRight } from "react-icons/hi2";
+import { MainLayout } from "../layouts/MainLayout";
+import { PageHero } from "../components/PageHero";
+import { Button } from "../components/common";
+import { SectionHeading } from "../components/SectionHeading";
+import { getPublicServices } from "../services/serviceService";
+export default function Services() { const [services, setServices] = useState([]); useEffect(() => { getPublicServices().then(setServices).catch((error) => toast.error(error.message)); }, []); return <MainLayout><PageHero eyebrow="Our expertise" title="Every gathering, beautifully considered." copy="From a quiet garden dinner to a multi-day wedding, our team designs an experience around your occasion." image="https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1800&q=85" /><section className="mx-auto max-w-7xl px-5 py-24 lg:px-8"><SectionHeading eyebrow="Tailored occasions" title="The art of bringing people together." />{services.length === 0 ? <p className="py-12 text-center text-slate-500">Our services will be available soon.</p> : <div className="grid gap-10">{services.map((service, index) => <article key={service._id} className={`grid overflow-hidden rounded-[1.5rem] bg-white shadow-sm md:grid-cols-2 ${index % 2 ? "md:[&>img]:order-2" : ""}`}><img className="h-80 w-full object-cover" src={service.image} alt={service.name} /><div className="flex flex-col justify-center p-9 md:p-14"><p className="text-xs font-bold uppercase tracking-[.15em] text-[#b89225]">{service.customCategory || service.category}</p><h2 className="font-display mt-4 text-4xl">{service.name}</h2><p className="mt-4 leading-7 text-slate-600">{service.description}</p><p className="mt-4 text-sm font-semibold">From ₹{service.price.toLocaleString("en-IN")} · Up to {service.maxGuests} guests</p><Link className="mt-7" to="/booking" state={{ service }}><Button variant="outline">Book this service <HiArrowRight /></Button></Link></div></article>)}</div>}</section></MainLayout>; }

@@ -1,0 +1,18 @@
+import express from "express";
+import rateLimit from "express-rate-limit";
+import * as controller from "../controllers/bookingController.js";
+import { optionalCustomerToken, requireActiveAdmin, verifyCustomerToken, verifyToken } from "../middleware/auth.js";
+import { validateBody, validateObjectId } from "../middleware/validateRequest.js";
+const router = express.Router();
+const publicFields = ["customerName", "customerEmail", "customerPhone", "bookingType", "packageId", "serviceId", "galleryItemId", "eventDate", "guestCount", "venue", "duration", "specialRequirements"];
+const adminFields = ["status", "paymentStatus", "advancePayment", "remainingPayment", "notes", "cancelReason", "paymentTransactionId"];
+const bookingLimiter = rateLimit({ windowMs: 60 * 60 * 1000, limit: 10, standardHeaders: "draft-8", legacyHeaders: false, message: { success: false, message: "Too many booking requests. Please try again later." } });
+router.post("/", bookingLimiter, optionalCustomerToken, validateBody({ allowedFields: publicFields, requiredFields: ["customerName", "customerEmail", "customerPhone", "bookingType", "eventDate", "guestCount", "venue"] }), controller.create);
+router.get("/mine", verifyCustomerToken, controller.listMine);
+router.delete("/mine/:id", verifyCustomerToken, validateObjectId(), controller.removeMine);
+router.post("/mine/:id/demo-payment", verifyCustomerToken, validateObjectId(), controller.demoPayment);
+router.get("/", verifyToken, requireActiveAdmin, controller.list);
+router.get("/:id", verifyToken, requireActiveAdmin, validateObjectId(), controller.getById);
+router.patch("/:id", verifyToken, requireActiveAdmin, validateObjectId(), validateBody({ allowedFields: adminFields }), controller.update);
+router.delete("/:id", verifyToken, requireActiveAdmin, validateObjectId(), controller.remove);
+export default router;

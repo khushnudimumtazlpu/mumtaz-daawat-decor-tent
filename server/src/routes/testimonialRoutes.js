@@ -1,0 +1,12 @@
+import express from "express";
+import * as controller from "../controllers/testimonialController.js";
+import { requireActiveAdmin, verifyToken } from "../middleware/auth.js";
+import { validateBody, validateObjectId } from "../middleware/validateRequest.js";
+const router = express.Router();
+const fields = ["userId", "bookingId", "serviceId", "rating", "title", "content", "authorName", "authorImage", "email", "isVerified", "featured", "helpfulCount", "isActive"];
+router.get("/", controller.list);
+router.get("/:id", validateObjectId(), controller.getById);
+router.post("/", verifyToken, requireActiveAdmin, validateBody({ allowedFields: fields, requiredFields: ["userId", "serviceId", "rating", "title", "content", "authorName", "email"] }), controller.create);
+router.put("/:id", verifyToken, requireActiveAdmin, validateObjectId(), validateBody({ allowedFields: fields }), controller.update);
+router.delete("/:id", verifyToken, requireActiveAdmin, validateObjectId(), controller.remove);
+export default router;

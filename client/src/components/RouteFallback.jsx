@@ -1,0 +1,2 @@
+import { Skeleton } from "./common/Skeleton";
+export const RouteFallback = () => <main className="mx-auto max-w-7xl px-5 py-20" aria-label="Loading page"><Skeleton className="h-5 w-32" /><Skeleton className="mt-5 h-14 max-w-xl" /><Skeleton className="mt-10 h-72 w-full rounded-2xl" /><div className="mt-6 grid gap-5 md:grid-cols-3"><Skeleton className="h-40" /><Skeleton className="h-40" /><Skeleton className="h-40" /></div><span className="sr-only" role="status">Loading page</span></main>;

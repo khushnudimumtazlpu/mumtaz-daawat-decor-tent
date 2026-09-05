@@ -1,0 +1,10 @@
+import * as bookingService from "../services/bookingService.js";
+const handle = (handler) => (req, res, next) => Promise.resolve(handler(req, res)).catch(next);
+export const create = handle(async (req, res) => { const { booking, email } = await bookingService.create(req.body, req.user?.role === "user" ? req.user.userId : null); res.status(201).json({ success: true, message: "Booking request received", data: { booking, email } }); });
+export const list = handle(async (req, res) => { const data = await bookingService.list(req.query); res.json({ success: true, data }); });
+export const getById = handle(async (req, res) => { const item = await bookingService.getById(req.params.id); res.json({ success: true, data: { item } }); });
+export const listMine = handle(async (req, res) => { const items = await bookingService.listForUser(req.user.userId); res.json({ success: true, data: { items } }); });
+export const remove = handle(async (req, res) => { await bookingService.remove(req.params.id); res.status(204).send(); });
+export const removeMine = handle(async (req, res) => { await bookingService.removeForUser(req.params.id, req.user.userId); res.status(204).send(); });
+export const demoPayment = handle(async (req, res) => { const item = await bookingService.completeDemoPayment(req.params.id, req.user.userId); res.json({ success: true, message: "Demo payment recorded", data: { item } }); });
+export const update = handle(async (req, res) => { const item = await bookingService.update(req.params.id, req.body); res.json({ success: true, message: "Booking updated", data: { item } }); });

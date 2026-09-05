@@ -1,0 +1,13 @@
+import mongoose from "mongoose";
+import Testimonial from "../models/Testimonial.js";
+import Service from "../models/Service.js";
+import User from "../models/User.js";
+import Booking from "../models/Booking.js";
+import { deleteResource, findResource, listResources, updateResource } from "./resourceService.js";
+const validateReference = async (Model, id, name) => { if (!mongoose.isValidObjectId(id)) throw Object.assign(new Error(`Invalid ${name}`), { statusCode: 400 }); if (!await Model.exists({ _id: id })) throw Object.assign(new Error(`Linked ${name} was not found`), { statusCode: 400 }); };
+const validateReferences = async (payload) => { if (payload.userId) await validateReference(User, payload.userId, "userId"); if (payload.serviceId) await validateReference(Service, payload.serviceId, "serviceId"); if (payload.bookingId) await validateReference(Booking, payload.bookingId, "bookingId"); };
+export const list = (query) => listResources(Testimonial, query, { baseFilter: { isActive: true }, searchFields: ["title", "content", "authorName"], filterFields: { serviceId: "string", rating: "string", featured: "boolean", isVerified: "boolean" }, sortFields: ["createdAt", "rating", "helpfulCount", "authorName"], populate: { path: "serviceId", select: "name category" } });
+export const getById = (id) => findResource(Testimonial, id, { filter: { isActive: true }, populate: { path: "serviceId", select: "name category" } });
+export const create = async (payload) => { await validateReferences(payload); return Testimonial.create(payload); };
+export const update = async (id, payload) => { await validateReferences(payload); return updateResource(Testimonial, id, payload); };
+export const remove = (id) => deleteResource(Testimonial, id);

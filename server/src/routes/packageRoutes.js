@@ -1,0 +1,12 @@
+import express from "express";
+import * as controller from "../controllers/packageController.js";
+import { requireActiveAdmin, verifyToken } from "../middleware/auth.js";
+import { validateBody, validateObjectId } from "../middleware/validateRequest.js";
+const router = express.Router();
+const fields = ["name", "description", "eyebrow", "serviceId", "tier", "price", "priceType", "discountedPrice", "duration", "maxGuests", "inclusions", "exclusions", "image", "availability", "featured", "isActive"];
+router.get("/", controller.list);
+router.get("/:id", validateObjectId(), controller.getById);
+router.post("/", verifyToken, requireActiveAdmin, validateBody({ allowedFields: fields, requiredFields: ["name", "description", "serviceId", "tier", "price", "duration", "maxGuests"] }), controller.create);
+router.put("/:id", verifyToken, requireActiveAdmin, validateObjectId(), validateBody({ allowedFields: fields }), controller.update);
+router.delete("/:id", verifyToken, requireActiveAdmin, validateObjectId(), controller.remove);
+export default router;

@@ -1,0 +1,12 @@
+import express from "express";
+import * as controller from "../controllers/galleryController.js";
+import { requireActiveAdmin, verifyToken } from "../middleware/auth.js";
+import { validateBody, validateObjectId } from "../middleware/validateRequest.js";
+const router = express.Router();
+const fields = ["title", "description", "images", "category", "customCategory", "startingPrice", "featured", "isActive"];
+router.get("/", controller.list);
+router.get("/:id", validateObjectId(), controller.getById);
+router.post("/", verifyToken, requireActiveAdmin, validateBody({ allowedFields: fields, requiredFields: ["title", "images", "category", "startingPrice"], objectArrayFields: ["images"] }), controller.create);
+router.put("/:id", verifyToken, requireActiveAdmin, validateObjectId(), validateBody({ allowedFields: fields }), controller.update);
+router.delete("/:id", verifyToken, requireActiveAdmin, validateObjectId(), controller.remove);
+export default router;

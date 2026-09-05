@@ -1,0 +1,14 @@
+{
+  "name": "tent-house",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Development scripts for the Tent House platform",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,magenta \"npm.cmd --prefix server run dev\" \"npm.cmd --prefix client run dev\"",
+    "dev:server": "npm.cmd --prefix server run dev",
+    "dev:client": "npm.cmd --prefix client run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

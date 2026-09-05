@@ -1,0 +1,10 @@
+import mongoose from "mongoose";
+import Package from "../models/Package.js";
+import Service from "../models/Service.js";
+import { deleteResource, findResource, listResources, updateResource } from "./resourceService.js";
+const validateService = async (serviceId) => { if (!mongoose.isValidObjectId(serviceId)) throw Object.assign(new Error("Invalid serviceId"), { statusCode: 400 }); const service = await Service.findById(serviceId); if (!service) throw Object.assign(new Error("Linked service was not found"), { statusCode: 400 }); };
+export const list = (query) => listResources(Package, query, { baseFilter: { isActive: true }, searchFields: ["name", "description"], filterFields: { serviceId: "string", tier: "string", availability: "boolean" }, sortFields: ["createdAt", "name", "price", "discountedPrice", "maxGuests"], populate: { path: "serviceId", select: "name category" } });
+export const getById = (id) => findResource(Package, id, { filter: { isActive: true }, populate: { path: "serviceId", select: "name category" } });
+export const create = async (payload) => { await validateService(payload.serviceId); return Package.create(payload); };
+export const update = async (id, payload) => { if (payload.serviceId) await validateService(payload.serviceId); return updateResource(Package, id, payload); };
+export const remove = (id) => deleteResource(Package, id);

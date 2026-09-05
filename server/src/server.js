@@ -37,6 +37,15 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 // The frontend owns the branded favicon, so the API can safely return no content.
 app.get("/favicon.ico", (_req, res) => res.status(204).end());
 
+// A lightweight root response for hosting-provider checks and direct visits.
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Mumtaz Daawat Decor API is running",
+    health: "/api/health",
+  });
+});
+
 // Routes
 app.use("/api", healthRoutes);
 app.use("/api/admin", adminRoutes);
